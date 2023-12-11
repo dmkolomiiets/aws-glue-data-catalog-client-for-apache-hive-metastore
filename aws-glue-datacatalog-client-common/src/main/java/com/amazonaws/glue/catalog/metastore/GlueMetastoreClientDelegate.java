@@ -306,6 +306,7 @@ public class GlueMetastoreClientDelegate {
     checkNotNull(tbl, "tbl cannot be null");
     boolean dirCreated = validateNewTableAndCreateDirectory(tbl);
     try {
+      logger.info(String.format("createTable: %s", tbl));
       // Glue Server side does not set DDL_TIME. Set it here for the time being.
       // TODO: Set DDL_TIME parameter in Glue service
       tbl.setParameters(deepCopyMap(tbl.getParameters()));
