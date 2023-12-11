@@ -84,12 +84,7 @@ import org.apache.thrift.TException;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -313,6 +308,10 @@ public class GlueMetastoreClientDelegate {
       tbl.getParameters().put(hive_metastoreConstants.DDL_TIME,
               Long.toString(System.currentTimeMillis() / MILLISECOND_TO_SECOND_FACTOR));
       if(tbl.getTableType() == null){
+        logger.info("createTable with [null] table type");
+        logger.info(Arrays.toString(Thread.currentThread().getStackTrace()).replace( ',', '\n' ));
+
+
         tbl.setTableType("EXTERNAL_TABLE");
       }
       TableInput tableInput = GlueInputConverter.convertToTableInput(tbl);
