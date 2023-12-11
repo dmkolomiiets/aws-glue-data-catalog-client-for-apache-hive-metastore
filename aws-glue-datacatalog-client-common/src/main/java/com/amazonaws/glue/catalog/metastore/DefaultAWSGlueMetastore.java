@@ -62,6 +62,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.common.StatsSetupConst;
 import org.apache.hadoop.hive.metastore.api.EnvironmentContext;
 import org.apache.hadoop.util.ReflectionUtils;
+import org.apache.log4j.Logger;
 import org.apache.thrift.TException;
 
 import java.util.ArrayList;
@@ -80,6 +81,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class DefaultAWSGlueMetastore implements AWSGlueMetastore {
+    private static final Logger logger = Logger.getLogger(DefaultAWSGlueMetastore.class);
+
 
     public static final int BATCH_GET_PARTITIONS_MAX_REQUEST_SIZE = 1000;
     /**
@@ -197,6 +200,7 @@ public class DefaultAWSGlueMetastore implements AWSGlueMetastore {
     public void createTable(String dbName, TableInput tableInput) {
         CreateTableRequest createTableRequest = new CreateTableRequest().withTableInput(tableInput)
                 .withDatabaseName(dbName).withCatalogId(catalogId);
+        logger.info(tableInput.toString());
         glueClient.createTable(createTableRequest);
     }
 
@@ -246,6 +250,7 @@ public class DefaultAWSGlueMetastore implements AWSGlueMetastore {
     public void deleteTable(String dbName, String tableName) {
         DeleteTableRequest deleteTableRequest = new DeleteTableRequest().withDatabaseName(dbName).withName(tableName)
                 .withCatalogId(catalogId);
+        logger.info(String.format("Drop table %s.%s", dbName, tableName));
         glueClient.deleteTable(deleteTableRequest);
     }
 
