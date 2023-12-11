@@ -201,12 +201,14 @@ public class DefaultAWSGlueMetastore implements AWSGlueMetastore {
         CreateTableRequest createTableRequest = new CreateTableRequest().withTableInput(tableInput)
                 .withDatabaseName(dbName).withCatalogId(catalogId);
         logger.info(tableInput.toString());
-
-        Table tbl =  getTable(dbName, tableInput.getName());
-        if (tbl != null){
-            updateTable(dbName, tableInput);
+        try{
+            Table tbl =  getTable(dbName, tableInput.getName());
+            if (tbl != null){
+                updateTable(dbName, tableInput);
+            }
+        } catch (Exception e){
+            glueClient.createTable(createTableRequest);
         }
-        glueClient.createTable(createTableRequest);
     }
 
     @Override
