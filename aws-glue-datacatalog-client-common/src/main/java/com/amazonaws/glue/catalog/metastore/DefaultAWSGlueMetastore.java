@@ -202,7 +202,7 @@ public class DefaultAWSGlueMetastore implements AWSGlueMetastore {
                 .withDatabaseName(dbName).withCatalogId(catalogId);
         logger.info(tableInput.toString());
 
-        Table tbl =  getTable(dbName, tableInput.getTargetTable().getName());
+        Table tbl =  getTable(dbName, tableInput.getName());
         if (tbl != null){
             updateTable(dbName, tableInput);
         }
