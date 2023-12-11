@@ -495,7 +495,7 @@ public class GlueMetastoreClientDelegate {
   ) throws TException {
     checkArgument(StringUtils.isNotEmpty(dbName), "dbName cannot be null or empty");
     checkArgument(StringUtils.isNotEmpty(tableName), "tableName cannot be null or empty");
-
+    logger.info("Try to drop table " + tableName);
     if (!tableExists(dbName, tableName)) {
       if (!ignoreUnknownTbl) {
         throw new UnknownTableException("Cannot find table: " + dbName + "." + tableName);
@@ -508,7 +508,7 @@ public class GlueMetastoreClientDelegate {
     String tblLocation = tbl.getSd().getLocation();
     boolean isExternal = isExternalTable(tbl);
     dropPartitionsForTable(dbName, tableName, deleteData && !isExternal);
-
+    logger.info("Dropping table " + tableName);
     try {
       glueMetastore.deleteTable(dbName, tableName);
     } catch (AmazonServiceException e){
