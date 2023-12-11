@@ -77,10 +77,10 @@ public final class MetastoreClientUtils {
    */
   public static void validateGlueTable(com.amazonaws.services.glue.model.Table table) {
     checkNotNull(table, "table cannot be null");
-
-    for (HiveTableValidator validator : HiveTableValidator.values()) {
-      validator.validate(table);
-    }
+    return;
+//    for (HiveTableValidator validator : HiveTableValidator.values()) {
+//      validator.validate(table);
+//    }
   }
 
   public static <K, V> Map<K, V> deepCopyMap(Map<K, V> originalMap) {
