@@ -312,7 +312,9 @@ public class GlueMetastoreClientDelegate {
       tbl.setParameters(deepCopyMap(tbl.getParameters()));
       tbl.getParameters().put(hive_metastoreConstants.DDL_TIME,
               Long.toString(System.currentTimeMillis() / MILLISECOND_TO_SECOND_FACTOR));
-
+      if(tbl.getTableType() == null){
+        tbl.setTableType("EXTERNAL_TABLE");
+      }
       TableInput tableInput = GlueInputConverter.convertToTableInput(tbl);
       logger.info(String.format("createTable - tableInput: %s", tbl));
       glueMetastore.createTable(tbl.getDbName(), tableInput);
