@@ -84,12 +84,7 @@ import org.apache.thrift.TException;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -306,13 +301,19 @@ public class GlueMetastoreClientDelegate {
     checkNotNull(tbl, "tbl cannot be null");
     boolean dirCreated = validateNewTableAndCreateDirectory(tbl);
     try {
+      logger.info(String.format("createTable: %s", tbl));
       // Glue Server side does not set DDL_TIME. Set it here for the time being.
       // TODO: Set DDL_TIME parameter in Glue service
       tbl.setParameters(deepCopyMap(tbl.getParameters()));
       tbl.getParameters().put(hive_metastoreConstants.DDL_TIME,
               Long.toString(System.currentTimeMillis() / MILLISECOND_TO_SECOND_FACTOR));
-
+      if(tbl.getTableType() == null){
+        logger.info("createTable with [null] table type");
+        logger.info(Arrays.toString(Thread.currentThread().getStackTrace()).replace( ',', '\n' ));
+        tbl.setTableType("EXTERNAL_TABLE");
+      }
       TableInput tableInput = GlueInputConverter.convertToTableInput(tbl);
+      logger.info(String.format("createTable - tableInput: %s", tbl));
       glueMetastore.createTable(tbl.getDbName(), tableInput);
     } catch (AmazonServiceException e) {
       if (dirCreated) {
@@ -420,7 +421,7 @@ public class GlueMetastoreClientDelegate {
     checkArgument(StringUtils.isNotEmpty(dbName), "dbName cannot be null or empty");
     checkArgument(StringUtils.isNotEmpty(oldTableName), "oldTableName cannot be null or empty");
     checkNotNull(newTable, "newTable cannot be null");
-
+    logger.info(String.format("alterTable: %s", newTable));
     if (!oldTableName.equalsIgnoreCase(newTable.getTableName())) {
       throw new UnsupportedOperationException("Table rename is not supported");
     }
@@ -493,7 +494,7 @@ public class GlueMetastoreClientDelegate {
   ) throws TException {
     checkArgument(StringUtils.isNotEmpty(dbName), "dbName cannot be null or empty");
     checkArgument(StringUtils.isNotEmpty(tableName), "tableName cannot be null or empty");
-
+    logger.info("Try to drop table " + tableName);
     if (!tableExists(dbName, tableName)) {
       if (!ignoreUnknownTbl) {
         throw new UnknownTableException("Cannot find table: " + dbName + "." + tableName);
@@ -506,7 +507,7 @@ public class GlueMetastoreClientDelegate {
     String tblLocation = tbl.getSd().getLocation();
     boolean isExternal = isExternalTable(tbl);
     dropPartitionsForTable(dbName, tableName, deleteData && !isExternal);
-
+    logger.info("Dropping table " + tableName);
     try {
       glueMetastore.deleteTable(dbName, tableName);
     } catch (AmazonServiceException e){

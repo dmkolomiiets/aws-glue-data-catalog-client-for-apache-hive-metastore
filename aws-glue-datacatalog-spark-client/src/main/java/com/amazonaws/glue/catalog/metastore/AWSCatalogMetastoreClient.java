@@ -611,6 +611,7 @@ public class AWSCatalogMetastoreClient implements IMetaStoreClient {
   @Override
   public void createTable(org.apache.hadoop.hive.metastore.api.Table tbl) throws org.apache.hadoop.hive.metastore.api.AlreadyExistsException, InvalidObjectException, MetaException,
         NoSuchObjectException, TException {
+    logger.info(String.format("sparkClient createTable: %s", tbl));
     glueMetastoreClientDelegate.createTable(tbl);
   }
 
