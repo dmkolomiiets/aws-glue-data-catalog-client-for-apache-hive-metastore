@@ -311,7 +311,9 @@ public class GlueMetastoreClientDelegate {
       tbl.setParameters(deepCopyMap(tbl.getParameters()));
       tbl.getParameters().put(hive_metastoreConstants.DDL_TIME,
               Long.toString(System.currentTimeMillis() / MILLISECOND_TO_SECOND_FACTOR));
-
+      if(tbl.getTableType().equals("MANAGED_TABLE")){
+        tbl.setTableType("EXTERNAL_TABLE");
+      }
       TableInput tableInput = GlueInputConverter.convertToTableInput(tbl);
       glueMetastore.createTable(tbl.getDbName(), tableInput);
     } catch (AmazonServiceException e) {
